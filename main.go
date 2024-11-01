@@ -6,64 +6,77 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
+	"strconv"
 )
 
-// func createBucket(w http.ResponseWriter, r *http.Request) {
-// 	bucketName := r.PathValue("BucketName")
+var dirPath string
 
-// 	if err := isValidBucketName(bucketName); err != nil {
-// 		w.WriteHeader(http.StatusBadRequest)
-// 		return
-// 	}
-
-// 	// Check if bucket already exists
-// 	if bucketExists(bucketName) {
-// 		w.WriteHeader(http.StatusConflict)
-// 		return
-// 	}
-
-// 	// Create the bucket directory
-// 	bucketDir := filepath.Join(dataDirectory, bucketName)
-// 	if err := os.MkdirAll(bucketDir, os.ModePerm); err != nil {
-// 		fmt.Printf("failed to create bucket directory: %w", err)
-// 		return
-// 	}
-
-// 	// Save bucket metadata
-// 	if err := saveBucketMetadata(bucketName); err != nil {
-// 		fmt.Printf("failed to save bucket metadata: %w", err)
-// 		return
-// 	}
-
-// 	fmt.Printf("Bucket '%s' created successfully.\n", bucketName)
-// }
+//TO-DO: help, gofumt, comments
 
 func main() {
-	port := flag.String("port", "8080", "Port for th HTTP server")
+	http.HandleFunc("/", badRequest)
+	
+	http.HandleFunc("GET /{$}", listAllBuckets)
+
+	http.HandleFunc("PUT /{BucketName}", putBucket)
+	http.HandleFunc("PUT /{BucketName}/{$}", putBucket)
+
+	http.HandleFunc("DELETE /{BucketName}", deleteBucket)
+	http.HandleFunc("DELETE /{BucketName}/{$}", deleteBucket)
+
+
+
+	
+	portF := flag.String("port", "8080", "Port for th HTTP server")
 	dir := flag.String("dir", "./data", "Directory for storing files")
 	flag.Parse()
 
+	port, err := strconv.Atoi(*portF)
+	if err != nil || port == 0{
+		log.Fatal("Incorrect port")
+	}
+
 	//creating directory if it is not exist
-	_, err := os.Stat(*dir)
-	if os.IsNotExist(err) {
+	dirPath = *dir
+	_, err = os.Stat(*dir)
+	if err != nil && !os.IsNotExist(err) {
+		log.Fatal(err)
+	}	
+
+	if err != nil{
 		err = os.Mkdir(*dir, os.ModePerm)
 		if err != nil {
 			log.Fatalf("Could nor create data directoty: %v", err)
 		}
-	} else if err != nil {
-		log.Fatalf("Error checking directory: %v", err)
+
+		bucketdata, err := os.OpenFile(filepath.Join(*dir, "buckets.csv"), os.O_CREATE|os.O_WRONLY, 0o755)
+		if err != nil {
+			log.Fatal("Could not create bucketdata")
+		}
+		_, err = bucketdata.Write([]byte("Name,CreationTime,LastModifiedTime,Status\n"))
+		if err != nil {
+			log.Fatal("Could not write to bucketdata")
+		}
+	} else{
+		_, err := os.Stat(filepath.Join(*dir, "buckets.csv"))
+		if err != nil && os.IsNotExist(err){
+			bucketdata, err := os.OpenFile(filepath.Join(*dir, "buckets.csv"), os.O_CREATE|os.O_WRONLY, 0o755)
+			if err != nil {
+				log.Fatal("Could not create bucketdata")
+			}
+			_, err = bucketdata.Write([]byte("Name,CreationTime,LastModifiedTime,Status\n"))
+			if err != nil {
+				log.Fatal("Could not write to bucketdata")
+			}
+		}else if err != nil {
+			log.Fatal("Buckets data error")
+		}
 	}
 
-	//http.HandleFunc("PUT /{BucketName}", createBucket)
-	http.HandleFunc("/status", statusHandler)
-
-	fmt.Printf("Server is running on port %s\n", *port)
-	err = http.ListenAndServe(":"+*port, nil)
+	fmt.Printf("Server is running on port %s\n", *portF)
+	err = http.ListenAndServe(":"+*portF, nil)
 	if err != nil {
 		log.Fatalf("Could not start the server: %v", err)
 	}
-}
-
-func statusHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Server is running!")
 }
