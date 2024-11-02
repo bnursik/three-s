@@ -7,6 +7,10 @@ import (
 	"strings"
 )
 
+func badRequest(w http.ResponseWriter, r *http.Request) {
+	writeHttpError(w, http.StatusBadRequest, "Bad Request", "Wrong http method or URL")
+}
+
 func writeHttpError(w http.ResponseWriter, status int, errorCode string, message string) {
 	w.WriteHeader(status)
 	fmt.Fprintln(w, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
@@ -18,8 +22,8 @@ func writeHttpError(w http.ResponseWriter, status int, errorCode string, message
 	fmt.Fprintln(w, "</Error>")
 }
 
-func isValidBucketName(bucketName string) (bool, string){
-	if len(bucketName) < 3 || len(bucketName) > 63{
+func isValidBucketName(bucketName string) (bool, string) {
+	if len(bucketName) < 3 || len(bucketName) > 63 {
 		return false, "Invalid length"
 	}
 
@@ -46,18 +50,17 @@ func isValidBucketName(bucketName string) (bool, string){
 	}
 
 	return true, ""
-
 }
 
-func helpMessage(){
+func helpMessage() {
 	fmt.Println("Simple Storage Service.")
-		fmt.Println()
-		fmt.Println("**Usage:**")
-		fmt.Println("\ttriple-s [-port <N>] [-dir <S>]")
-		fmt.Println("\ttriple-s --help")
-		fmt.Println()
-		fmt.Println("**Options:**")
-		fmt.Println("- --help\tShow this screen.")
-		fmt.Println("- --port N\tPort number")
-		fmt.Println("- --dir S\tPath to the directory")
+	fmt.Println()
+	fmt.Println("**Usage:**")
+	fmt.Println("\ttriple-s [-port <N>] [-dir <S>]")
+	fmt.Println("\ttriple-s --help")
+	fmt.Println()
+	fmt.Println("**Options:**")
+	fmt.Println("- --help\tShow this screen.")
+	fmt.Println("- --port N\tPort number")
+	fmt.Println("- --dir S\tPath to the directory")
 }
