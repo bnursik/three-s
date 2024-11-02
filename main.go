@@ -12,7 +12,7 @@ import (
 
 var dirPath string
 
-//TO-DO: help, gofumt, comments
+//TO-DO: gofumt, comments
 
 func main() {
 	http.HandleFunc("/", badRequest)
@@ -25,12 +25,26 @@ func main() {
 	http.HandleFunc("DELETE /{BucketName}", deleteBucket)
 	http.HandleFunc("DELETE /{BucketName}/{$}", deleteBucket)
 
+	http.HandleFunc("PUT /{BucketName}/{ObjectKey}", putObject)
+	http.HandleFunc("PUT /{BucketName}/{ObjectKey}/{$}", putObject)
+
+	http.HandleFunc("GET /{BucketName}/{ObjectKey}", getObject)
+	http.HandleFunc("GET /{BucketName}/{ObjectKey}/{$}", getObject)
+
+	http.HandleFunc("DELETE /{BucketName}/{ObjectKey}", deleteObject)
+	http.HandleFunc("DELETE /{BucketName}/{ObjectKey}/{$}", deleteObject)
 
 
 	
 	portF := flag.String("port", "8080", "Port for th HTTP server")
 	dir := flag.String("dir", "./data", "Directory for storing files")
+	helpFlag := flag.Bool("help", false, "provides usage information")
 	flag.Parse()
+
+	if *helpFlag{
+		helpMessage()
+		os.Exit(0)
+	}
 
 	port, err := strconv.Atoi(*portF)
 	if err != nil || port == 0{

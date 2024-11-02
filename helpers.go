@@ -48,3 +48,16 @@ func isValidBucketName(bucketName string) (bool, string){
 	return true, ""
 
 }
+
+func helpMessage(){
+	fmt.Println("Simple Storage Service.")
+		fmt.Println()
+		fmt.Println("**Usage:**")
+		fmt.Println("\ttriple-s [-port <N>] [-dir <S>]")
+		fmt.Println("\ttriple-s --help")
+		fmt.Println()
+		fmt.Println("**Options:**")
+		fmt.Println("- --help\tShow this screen.")
+		fmt.Println("- --port N\tPort number")
+		fmt.Println("- --dir S\tPath to the directory")
+}
