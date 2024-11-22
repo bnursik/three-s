@@ -1,6 +1,6 @@
 # three-s
 
-**three-s** is a simplified version of Amazon S3 (Simple Storage Service), designed to help you understand the core concepts of cloud-based object storage systems. It provides a REST API for managing storage, enabling operations like creating buckets, uploading, retrieving, and deleting files, as well as handling metadata.
+**three-s** is a simplified version of Amazon S3 (Simple Storage Service), designed to understand the core concepts of cloud-based object storage systems. It provides a REST API for managing storage, enabling operations like creating buckets, uploading, retrieving, and deleting files, as well as handling metadata.
 
 This project focuses on essential features to demonstrate RESTful API design, basic networking, and data management concepts.
 
@@ -14,4 +14,4 @@ This project focuses on essential features to demonstrate RESTful API design, ba
 ## Installation
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/three-s.git
+   git clone https://github.com/bnursik/three-s.git
